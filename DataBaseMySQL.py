@@ -105,19 +105,19 @@ class DataBase():
         return fomatted_date
         
         
+        
 
 
     def SelectBetween(self, start_date, end_date):
-        start_date = self.Format_date(start_date)
-        end_date = self.Format_date(end_date)
+        # start_date = self.Format_date(start_date)
+        # end_date = self.Format_date(end_date)
         try:
             connection = self.get_connection()
             cursor = connection.cursor()
             sql_select = f"SELECT * FROM parsing_logs WHERE STR_TO_DATE(date, '%d/%b/%Y:%H:%i:%s +0300') BETWEEN STR_TO_DATE('{start_date}:00:00:00 +0300', '%d/%b/%Y:%H:%i:%s +0300') AND STR_TO_DATE('{end_date}:23:59:59 +0300', '%d/%b/%Y:%H:%i:%s +0300');"
             cursor.execute(sql_select)
             sql_string = cursor.fetchall()
-            for row in sql_string:
-                print(row)
+            return sql_string
 
         except mysql.connector.pooling.PoolError as e:
             print("Пул соединения исчерпан")

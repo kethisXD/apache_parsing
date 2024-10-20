@@ -57,9 +57,9 @@ def footer_main(stdscr):
         if k == 49:
             showDB_shell(stdscr)
         if k == 50:
-            pass
+            ShowBetweenShell(stdscr)
         if k == 51:
-            pass
+            AddInShell(stdscr)
         if k == 52:
             DeleteDB_Sheel(stdscr)
         if k == 53:
@@ -88,10 +88,57 @@ def DeleteDB_Sheel(stdscr):
         k = stdscr.getch()
         if k == 89 or k == 121:
             db.DeleteData()
+            stdscr.addstr(2, 0, "Данные успешно удалены с бд")
+            slide_main(stdscr)
         if k == 78 or k == 110:
             break
     
     slide_main(stdscr)
+
+def ShowBetweenShell(stdscr):
+    curses.curs_set(1)
+    curses.echo()
+    while True:
+        stdscr.clear()
+        db = header_check_db(stdscr)
+        stdscr.addstr(2, 0, "Начало даты ( DD.MM.YEAR )")
+        stdscr.move(3, 3)
+        stdscr.addstr(3, 0, "- ")
+        k = stdscr.getstr()
+        try:
+            start_date = db.Format_date(k.decode("utf-8"))
+            break
+        except ValueError as err:
+            stdscr.addstr(5, 0, "Неправильный ввод данных", curses.color_pair(1))
+            stdscr.addstr(6, 0, "Повторить попытку 'any key' ")
+            stdscr.getkey()
+
+    while True:
+        stdscr.clear()
+        db = header_check_db(stdscr)
+        stdscr.addstr(2, 0, "Конец даты ( DD.MM.YEAR )")
+        stdscr.move(3, 3)
+        stdscr.addstr(3, 0, "- ")
+        k = stdscr.getstr()
+        try:
+            end_date = db.Format_date(k.decode("utf-8"))
+            break
+        except ValueError as err:
+            stdscr.addstr(5, 0, "Неправильный ввод данных", curses.color_pair(1))
+            stdscr.addstr(6, 0, "Повторить попытку 'any key' ")
+            stdscr.getkey()
+
+    db = header_check_db(stdscr)
+    between_list = db.SelectBetween(start_date=start_date, end_date=end_date)
+    row_num = 2
+    for row in between_list:
+        stdscr.addstr(row_num, 0, str(row))
+        row_num += 1
+
+    footer_main(stdscr)
+
+
+
 
 
 def SaveToJSONShell(stdscr):
@@ -104,7 +151,12 @@ def SaveToJSONShell(stdscr):
     stdscr.refresh()
     footer_main(stdscr)
 
-
+def AddInShell(stdscr):
+    stdscr.clear()
+    db = header_check_db(stdscr)
+    db.SaveData()
+    stdscr.addstr("Данные успешно добавлены в бд")
+    footer_main(stdscr)
 
 def slide_main(stdscr):
     header_check_db(stdscr)
